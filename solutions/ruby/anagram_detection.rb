@@ -1,22 +1,25 @@
 # encoding: utf-8
 
-# return true if string a and string b are anagrams
-def anagram?(a, b)
-  char_count = proc { |hsh, c|
-    hsh[c] ||= 0
-    hsh[c] += 1
-    hsh
-  }
-  if a.each_char.reduce({}, &char_count) == b.each_char.reduce({}, &char_count)
-    true
-  else
-    false
-  end
-end
-
-
+# return how many times child_string or anagram of child string appears in parent_string
 def anagram_detection(parent, child)
-  x = parent.length - child.length
-  (0...x).reduce(0) { |c, i| anagram?(parent[i, child.length], child) ? c + 1 : c }
+  window_length = child.length
+  ctr = 0
+  0.upto(parent.length - window_length).each do |idx|
+    sub_str = parent[idx...(idx + window_length)]
+    ctr += 1 if anagrams?(child, sub_str)
+  end
+  
+  ctr
 end
 
+def anagrams?(str1, str2)
+  hash_map = Hash.new(0)
+  str1.each_char { |char| hash_map[char] += 1 }
+  str2.each_char do |char|
+    return false unless hash_map[char]
+    hash_map[char] -= 1
+    return false if hash_map[char] < 0
+  end
+
+  true
+end
